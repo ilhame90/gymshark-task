@@ -1,0 +1,96 @@
+openapi: 3.0.3
+servers:
+  - url: /v1
+info:
+  description: |-
+    This is a API specs for Orders service based on OpenAPI 3 specification.
+  version: 1.0.0
+  title: Orders API
+  contact:
+    email: qaflanova.i@gmail.com
+tags:
+  - name: orders
+    description: |-
+      Includes order operations - create an order.
+  - name: healthcheck
+    description: |-
+      Healthcheck of the service
+paths:
+  /order:
+    post:
+      tags:
+        - orders
+      summary: Number of Packages
+      description: Endpoint returns number of packages based on user input
+      requestBody:
+        description: Ordered items
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NumberOfPacksRequest"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Pack"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+  
+components:
+  schemas:
+    Pack:
+      required:
+        - name
+        - quantity
+      properties:
+        name:
+          type: integer
+        quantity:
+          type: integer
+    NumberOfPacksRequest:
+      required:
+        - ordered_items
+      properties:
+        ordered_items:
+          type: integer
+          minimum: 1
+          description: Amount of the ordered items
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - code
+        - message
+    BadRequestError:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      description: Bad request
+      example:
+        code: "400"
+        message: bad request
+    InternalServerError:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      description: Error happened on server side
+      example:
+        code: "500"
+        message: something went wrong
