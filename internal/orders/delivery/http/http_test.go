@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPostAccounts(t *testing.T) {
+func TestPostOrders(t *testing.T) {
 
 	testCases := []struct {
 		name          string
@@ -62,7 +62,7 @@ func TestPostAccounts(t *testing.T) {
 			handler := NewOrdersHandler(cfg, uc)
 			RegisterHandlers(grp, handler)
 
-			req := httptest.NewRequest(http.MethodPost, "/v1/order", bytes.NewReader(tc.body))
+			req := httptest.NewRequest(http.MethodPost, "/v1/orders", bytes.NewReader(tc.body))
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
 			e.ServeHTTP(rec, req)

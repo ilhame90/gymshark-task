@@ -53,6 +53,7 @@ func TestNumberOfPacks(t *testing.T) {
 			expected:     []models.Pack{{Name: 1000, Quantity: 1}},
 		},
 		{
+			//*! This case fails =)
 			name:         "ORDER: 751 --- PACKS: 250, 500, 750, 1000, 2000, 5000",
 			orderedItems: 751,
 			packs:        []int{250, 500, 750, 1000, 2000, 5000},

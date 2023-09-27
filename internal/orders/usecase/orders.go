@@ -22,18 +22,75 @@ func (u *OrdersUsecase) NumberOfPacks(ctx context.Context, orderedItems int) []m
 	_, span := otel.Tracer("orders").Start(ctx, "NumberOfPacks")
 	defer span.End()
 
-	//var packSizes = u.cfg.Packs
-	if orderedItems == 1 || orderedItems == 250 {
-		return []models.Pack{{Name: 250, Quantity: 1}}
+	packs := calculate(u.cfg.Packs, orderedItems)
+	res := []models.Pack{}
+	for k, v := range packs {
+		if v == 0 {
+			continue
+		}
+		res = append(res, models.Pack{
+			Name:     k,
+			Quantity: v,
+		})
 	}
-	if orderedItems == 751 {
-		return []models.Pack{{Name: 1000, Quantity: 1}}
+	return res
+}
+
+func calculate(packs []int, order int) map[int]int {
+	orderQty := order
+	res := make(map[int]int)
+
+	for i := len(packs) - 1; i >= 0; i-- {
+		pack := packs[i]
+
+		// skip packs greater than order
+		if orderQty < pack {
+			if i == 0 && orderQty > 0 {
+				res[pack]++
+			}
+			continue
+		}
+
+		packQty := orderQty / pack
+		orderQty = orderQty % pack
+
+		res[pack] = packQty
+
+		if i == 0 && orderQty > 0 {
+			res[pack]++
+		}
 	}
-	if orderedItems == 251 {
-		return []models.Pack{{Name: 500, Quantity: 1}}
+
+	return optimizeOrder(packs, res)
+}
+
+func optimizeOrder(packs []int, order map[int]int) map[int]int {
+	packMap := make(map[int]struct{})
+	for _, pack := range packs {
+		packMap[pack] = struct{}{}
 	}
-	if orderedItems == 750 {
-		return []models.Pack{{Name: 250, Quantity: 1}, {Name: 500, Quantity: 1}}
+
+	for pack, qty := range order {
+		if qty <= 1 {
+			continue
+		}
+		for {
+			checkPack := pack * qty
+			_, exists := packMap[checkPack]
+			if !exists || qty <= 1 {
+				order[pack] = qty
+				break
+			}
+
+			order[pack] -= qty
+			order[checkPack]++
+
+			pack = checkPack
+			qty = order[checkPack]
+
+		}
+
 	}
-	return nil
+
+	return order
 }
