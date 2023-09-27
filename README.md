@@ -1,5 +1,4 @@
 # Orders
-[Service address](https://gymshark-task-mwk5jbsrxq-oe.a.run.app)
 
 ## Description
 Order sevice
@@ -37,3 +36,8 @@ Set configurations. Project contains `.env` file to ease setup environment varia
 Run service
 
 `go run cmd/orders/main.go`
+
+
+## Check live version
+Address: `https://gymshark-task-mwk5jbsrxq-oe.a.run.app`
+Check the API specification [here](https://github.com/ilhame90/gymshark-task/blob/main/api/openapi/main.yml)
